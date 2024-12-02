@@ -1,0 +1,36 @@
+.carrossel {
+  position: relative;
+  border-radius: 8px;
+  box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  overflow: hidden;
+}
+
+.button__navagation {
+  z-index: 10;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.button__navagation_left {
+  left: 0;
+}
+
+.button__navagation_right {
+  right: 0;
+}
+
+.carrossel__imagens {
+  display: flex;
+  flex-direction: row;
+  transition: transform ease 500ms;
+}
+
+.carrossel__move {
+  transform: translateX(-100%);
+}
+
+/* .carrossel__move_right {
+  transform: translateX(-100%);
+} */
