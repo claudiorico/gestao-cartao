@@ -9,8 +9,9 @@
 .button__navagation {
   z-index: 10;
   position: absolute;
-  top: 0;
+  top: 50%;
   bottom: 0;
+  transform: translateY(-50%);
 }
 
 .button__navagation_left {

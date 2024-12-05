@@ -9,66 +9,18 @@ import {
 import { Bar } from "react-chartjs-2";
 import { Card, CardContent, Typography } from "@mui/material";
 import { useFileUploadContext } from "../context/FileUploadContext";
-import { selectOptions } from "../context/Constans";
+import { formatCurrencyFloat } from "../src/auxiliares/functions";
 
 
 // Registrar os componentes necessários para o Chart.js
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
-// ChartJS.defaults.plugins.tooltip.titleFont = () => ({ size: 20, lineHeight: 1.2, weight: 800 });
 
 const BarChart = () => {
 
   const { dataChart } = useFileUploadContext();
-  // Dados do gráfico
-//   const data = {
-//     labels: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio"], // Rótulos do eixo X
-//     datasets: [
-//       {
-//         label: "Produto A",
-//         data: [30, 50, 70],
-//         backgroundColor: "rgba(75, 192, 192, 0.7)",
-//       },
-//       {
-//         label: "Produto B",
-//         data: [40, 60, 90],
-//         backgroundColor: "rgba(153, 102, 255, 0.7)",
-//       },
-//       {
-//         label: "Produto C",
-//         data: [20, 80, 60],
-//         backgroundColor: "rgba(255, 159, 64, 0.7)",
-//       },
-//     ],
-//   };
-
-// Função para reorganizar os dados dinamicamente
-function reorganizeData(data) {
-    const { labels, datasets } = data;
-  
-    // Transformar os dados por categoria (coluna) e ordenar por valores
-    const transposedData = labels.map((_, index) => {
-      // Extrair os valores de cada categoria (coluna)
-      const column = datasets.map((dataset) => ({
-        value: dataset.data[index],
-        datasetIndex: datasets.indexOf(dataset),
-      }));
-      // Ordenar os valores de menor para maior
-      return column.sort((a, b) => a.value - b.value);
-    });
-    // Atualizar os datasets com base na nova ordem
-    const updatedDatasets = datasets.map((dataset, datasetIndex) => ({
-      ...dataset,
-      data: transposedData.map((column) => {
-        const found = column.find((item) => item.datasetIndex === datasetIndex);
-        return found ? found.value : 0; // Reinsere o valor correspondente
-      }),
-    }));
-  
-    return { labels, datasets: updatedDatasets };
-  }
-  
+ 
   // Reorganizar os dados dinamicamente
-  const organizedData = reorganizeData(dataChart);
+  // const organizedData = reorganizeData(dataChart);
 
   // Opções do gráfico
   const options = {
@@ -109,12 +61,7 @@ function reorganizeData(data) {
       },
     },
   };
-  function formatCurrencyFloat(valor) {
-    // Formatação para moeda em português do Brasil (BRL - Real)
-    const valorFloat = parseFloat(valor);
-    const valorFormatado = new Intl.NumberFormat("pt-BR").format(valorFloat);
-    return valorFormatado;
-  }
+
   // Plugin para exibir os valores totais no topo de cada coluna
   const totalPlugin = {
     id: "totalPlugin",

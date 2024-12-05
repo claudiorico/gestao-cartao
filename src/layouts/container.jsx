@@ -4,6 +4,7 @@ import BarChart from "../../components/ChartBar.jsx";
 import ChartMonthly from "../../components/ChartBarMonth.jsx";
 import { useFileUploadContext } from "../../context/FileUploadContext.jsx";
 import estilos from "./../css/ButtonNavegation.module.css";
+import PolarAreaChart from "../../components/ChartPolarArea.jsx";
 
 export default function PageContainer() {
   //   const { queryInfo } = useFileUploadContext();
@@ -12,14 +13,29 @@ export default function PageContainer() {
   //   if (queryInfo.isLoading) return "Carregando...";
   //   if (queryInfo.error) return <div>Error: {queryInfo.error.message}</div>;
 
+  let selectItem = 0;
+
   function handleButtonLeft(event) {
     const carrossel = document.getElementById("carrossel__imagens");
-    carrossel.classList.toggle(estilos.carrossel__move);
+    console.log(carrossel);
+    selectItem += 1;
+    if (selectItem >= 2) {
+      selectItem = 2;
+    }
+    // carrossel.classList.toggle(estilos.carrossel__move);
+    carrossel.style = "transform: translateX(-" + selectItem * 100 + "%)";
   }
 
   function handleButtonRight(event) {
+    // const carrossel = document.getElementById("carrossel__imagens");
+    // carrossel.classList.toggle(estilos.carrossel__move);
     const carrossel = document.getElementById("carrossel__imagens");
-    carrossel.classList.toggle(estilos.carrossel__move);
+    console.log(carrossel);
+    selectItem -= 1;
+    if (selectItem <= 0) {
+      selectItem = 0;
+    }
+    carrossel.style = "transform: translateX(-" + selectItem * 100 + "%)";
   }
   return (
     <>
@@ -41,8 +57,8 @@ export default function PageContainer() {
             sx={{
               flexBasis: "100%",
               flexShrink: 0,
-              height: "100%",
-              backgroundColor: "#add8e6"
+              // height: "100%",
+              backgroundColor: "#add8e6",
             }}
           >
             <BarChart />
@@ -51,11 +67,21 @@ export default function PageContainer() {
             sx={{
               flexBasis: "100%",
               flexShrink: 0,
-              height: "100%",
-              backgroundColor: "#add8e6"
+              // height: "100%",
+              backgroundColor: "#add8e6",
             }}
           >
             <ChartMonthly />
+          </Box>
+          <Box
+            sx={{
+              flexBasis: "100%",
+              flexShrink: 0,
+              // height: "100%",
+              backgroundColor: "#add8e6",
+            }}
+          >
+            <PolarAreaChart />
           </Box>
         </div>
       </div>

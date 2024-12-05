@@ -1,40 +1,47 @@
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import TableViewIcon from '@mui/icons-material/TableView';
-import { FileUpload } from '@mui/icons-material';
-import { AppProvider } from '@toolpad/core/react-router-dom';
-import { Outlet } from 'react-router-dom';
-import SnackbarAlert from '../components/MessageAlert.jsx';
-import { createTheme } from '@mui/material/styles';
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import TableViewIcon from "@mui/icons-material/TableView";
+import { FileUpload } from "@mui/icons-material";
+import { AppProvider } from "@toolpad/core/react-router-dom";
+import { Outlet } from "react-router-dom";
+import SnackbarAlert from "../components/MessageAlert.jsx";
+import { createTheme } from "@mui/material/styles";
+import { useState, useMemo } from "react";
+import OAuthSignInPage from "./pages/Login.jsx";
+import { useFileUploadContext } from "../context/FileUploadContext.jsx";
+import { useNavigate } from "react-router-dom";
+import { signOut } from "firebase/auth";
+import { auth } from "./pages/firebase.js";
+import { Account } from '@toolpad/core/Account';
 
 const NAVIGATION = [
   {
-    kind: 'header',
-    title: 'Main items',
+    kind: "header",
+    title: "Main items",
   },
   {
-    title: 'Dashboard',
+    title: "Dashboard",
     icon: <DashboardIcon />,
   },
   {
-    segment: 'fileupload',
-    title: 'Carregar Arquivo',
+    segment: "fileupload",
+    title: "Carregar Arquivo",
     icon: <FileUpload />,
   },
   {
-    segment: 'cartupdate',
-    title: 'Atualização de Extrato',
+    segment: "cartupdate",
+    title: "Atualização de Extrato",
     icon: <TableViewIcon />,
-  },  
+  },
 ];
 
 const BRANDING = {
-  title: 'Gestão de Gastos - Cartão',
-  logo: <img src="cart.svg" alt="Logo Cart"/>
+  title: "Gestão de Gastos - Cartão",
+  logo: <img src="cart.svg" alt="Logo Cart" />,
 };
 
 const demoTheme = createTheme({
   cssVariables: {
-    colorSchemeSelector: 'data-toolpad-color-scheme',
+    colorSchemeSelector: "data-toolpad-color-scheme",
   },
   colorSchemes: { light: true, dark: true },
   breakpoints: {
@@ -49,9 +56,47 @@ const demoTheme = createTheme({
 });
 
 export default function App() {
+
+  const navigate = useNavigate();
+
+  const { session, setSession } = useFileUploadContext();
+
+  const authentication = useMemo(() => {
+    return {
+      signIn: () => {
+        // setSession({
+        //   user: {
+        //     name: "Bharat Kashyap",
+        //     email: "bharatkashyap@outlook.com",
+        //     image: "https://avatars.githubusercontent.com/u/19550456",
+        //   },
+        // });
+        //<OAuthSignInPage/>
+        navigate('login');
+      },
+      signOut: async () => {
+        try {
+          await signOut(auth);
+          console.log("Usuário deslogado.");
+        } catch (error) {
+          console.error("Erro ao deslogar:", error);
+        }        
+        setSession(null);
+        navigate('login');
+      },
+    };
+  }, []);
+  console.log('App session', session);
+
   return (
-    <AppProvider navigation={NAVIGATION} branding={BRANDING} theme={demoTheme}>
-      <SnackbarAlert/>
+    <AppProvider
+      navigation={NAVIGATION}
+      branding={BRANDING}
+      theme={demoTheme}
+      session={session}
+      authentication={authentication}
+    >
+      <SnackbarAlert />
       <Outlet />
     </AppProvider>
   );

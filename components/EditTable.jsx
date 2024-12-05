@@ -33,7 +33,6 @@ const EditTable = ({ uploadActive = false }) => {
     sendMessage,
     ifRefExist,
     setOpenDialog,
-    queryInfo
   } = useFileUploadContext();
 
   // Obtém o ano atual

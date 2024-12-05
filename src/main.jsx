@@ -3,7 +3,10 @@ import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
-import Layout from "./layouts/dashboard";
+import Layout from "./layouts/dashboard.jsx";
+import OAuthSignInPage from "./pages/Login.jsx";
+import SignInPage from "./pages/SignInPage.jsx";
+import ProtectedRoutes from "./pages/ProtectedRoute.jsx";
 import EditTable from "../components/EditTable.jsx";
 import FileUploadContext from "../context/FileUploadContext.jsx";
 import EditTableUpdate from "../components/EditTableUpdate.jsx";
@@ -15,36 +18,46 @@ const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
-    Component: App, // root layout route
+    element: <App />, // root layout route
     children: [
       {
         path: "/",
-        Component: Layout,
+        element: <Layout />,
         children: [
           {
-            path: "",
-            Component: PageContainer,
-          },
-          {
-            path: "fileupload",
-            Component: FileUpload,
-          },
-          {
-            path: "cartupdate",
-            Component: EditTableUpdate,
-          },
-        ],
+            path: "/",
+            element: <ProtectedRoutes />,
+            children: [
+              {
+                path: "/",
+                element: <PageContainer />,
+              },
+              {
+                path: "/fileupload",
+                element: <FileUpload />,
+              },
+              {
+                path: "/cartupdate",
+                element: <EditTableUpdate />,
+              },
+            ]
+          }
+        ]
+      },
+      {
+        path: "/login",
+        element: <OAuthSignInPage />,
       },
     ],
   },
 ]);
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <FileUploadContext>
-        <RouterProvider router={router} />
-      </FileUploadContext>
-    </QueryClientProvider>
-  </StrictMode>
+  // <StrictMode>
+  <QueryClientProvider client={queryClient}>
+    <FileUploadContext>
+      <RouterProvider router={router} />
+    </FileUploadContext>
+  </QueryClientProvider>
+  // {/* </StrictMode> */}
 );

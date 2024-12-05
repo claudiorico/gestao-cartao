@@ -6,10 +6,12 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { Bar, PolarArea } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import { Card, CardContent, Typography } from "@mui/material";
 import { useFileUploadContext } from "../context/FileUploadContext";
-import { months, backgroundColor } from "../context/Constans";
+import { months } from "../context/Constans";
+import {reorganizeDataMonth} from "../src/auxiliares/functions.js";
+import { formatCurrencyFloat } from "../src/auxiliares/functions.js";
 
 // Registrar os componentes necessários para o Chart.js
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
@@ -19,80 +21,9 @@ const ChartMonthly = () => {
   const currentMonth = new Date().getMonth() + 1;
   const mes = months.find((el) => el.value === currentMonth.toString());
 
-  // Dados do gráfico
-  //   const data = {
-  //     labels: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio"], // Rótulos do eixo X
-  //     datasets: [
-  //       {
-  //         label: "Produto A",
-  //         data: [30, 50, 70],
-  //         backgroundColor: "rgba(75, 192, 192, 0.7)",
-  //       },
-  //       {
-  //         label: "Produto B",
-  //         data: [40, 60, 90],
-  //         backgroundColor: "rgba(153, 102, 255, 0.7)",
-  //       },
-  //       {
-  //         label: "Produto C",
-  //         data: [20, 80, 60],
-  //         backgroundColor: "rgba(255, 159, 64, 0.7)",
-  //       },
-  //     ],
-  //   };
-
-  // Função para reorganizar os dados dinamicamente
-  function reorganizeData(data) {
-    const { labels, datasets } = data;
-
-    //   // Transformar os dados por categoria (coluna) e ordenar por valores
-    //   const transposedData = labels.map((_, index) => {
-    // Extrair os valores de cada categoria (coluna)
-    const column = datasets[0]?.data.map((dataset, index) => ({
-      value: dataset,
-      datasetIndex: index,
-    }));
-    //     // Ordenar os valores de menor para maior
-    //     return column.sort((a, b) => a.value - b.value);
-    //   });
-    const dataSorted = column?.sort((a, b) => a.value - b.value);
-
-    //    // Dados do gráfico
-    //    const dataChart = {
-    //     labels: labels, // Rótulos do eixo X
-    //     datasets: [{
-    //       data: dataCategory,
-    //       backgroundColor: bgcolor,
-    //     }],
-    //   };
-    //   const transposedData = [];
-    //   // Atualizar os datasets com base na nova ordem
-    //   const updatedDatasets = datasets.map((dataset, datasetIndex) => ({
-    //     ...dataset,
-    //     data: dataSorted.map((column) => column.value ),
-    //     labels: dataSorted.map((column) => labels[column.datasetIndex] ),
-    //   }));
-
-    const dataSetSorted = [];
-    const labelsSorted = [];
-    const bgcolor = [];
-
-    for (let index in dataSorted) {
-      dataSetSorted.push(dataSorted[index].value);
-      labelsSorted.push(labels[dataSorted[index].datasetIndex]);
-      bgcolor.push(backgroundColor[labels[dataSorted[index].datasetIndex]]);
-    }
-
-    const updatedDatasets = {
-      labels: labelsSorted,
-      datasets: [{ data: dataSetSorted, backgroundColor: bgcolor }],
-    };
-
-    return updatedDatasets;
-  }
-
+  
   // Reorganizar os dados dinamicamente
-  const organizedData = reorganizeData(dataMonthly);
+  const organizedData = reorganizeDataMonth(dataMonthly);
 
   // Opções do gráfico
   const options = {
@@ -133,12 +64,7 @@ const ChartMonthly = () => {
         },
       },    
   };
-  function formatCurrencyFloat(valor) {
-    // Formatação para moeda em português do Brasil (BRL - Real)
-    const valorFloat = parseFloat(valor);
-    const valorFormatado = new Intl.NumberFormat("pt-BR", {minimumFractionDigits: 2}).format(valorFloat);
-    return valorFormatado;
-  }
+
   // Plugin para exibir os valores totais no topo de cada coluna
   const totalPlugin = {
     id: "totalPlugin",

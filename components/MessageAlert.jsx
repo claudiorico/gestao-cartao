@@ -11,10 +11,6 @@ function SnackbarAlert() {
         setOpen(true);
     }, [ messageObj ])
 
-    // const handleClick = () => {
-    //     setOpen(true);
-    // };
-
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
             return;

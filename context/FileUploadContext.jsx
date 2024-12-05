@@ -1,10 +1,13 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import Papa from "papaparse";
 import axios from "axios";
 import { months, selectOptions, backgroundColor } from "./Constans";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../src/pages/firebase.js";
+import { formatCurrency, formatCurrencyFloat } from "../src/auxiliares/functions.js";
 
 export const fileUploadContext = createContext(null);
 export const useFileUploadContext = () => useContext(fileUploadContext);
@@ -29,9 +32,38 @@ const FileUploadContext = ({ children }) => {
     refkey: "",
   });
   const [messageDialog, setMessageDialog] = useState(
-    "Já há dados referente a este ano e mês, gostaria de sobregravar?"
+    ""
   );
-  const [messageObj, setMessage] = useState(null);
+  const [messageObj, setMessage] = useState({severity: '',
+    message: ''
+  });
+
+  const [session, setSession] = useState({
+    user: {
+      name: "",
+      email: "",
+      image: "",
+    },
+  });
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      const userlogin = {
+        user: {
+          name: currentUser.displayName,
+          email: currentUser.email,
+          image: currentUser.photoURL,
+        },
+      };
+      console.log(userlogin);
+      setSession(userlogin);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   // Get QueryClient from the context
   const queryClient = useQueryClient();
@@ -131,7 +163,7 @@ const FileUploadContext = ({ children }) => {
         console.log(res.data);
         const { CartDetails } = res.data;
 
-        const reference = currentYear + currentMonth;
+        // const reference = currentYear + currentMonth;
         let labels = [];
         // //Criando um objeto indexado com os dados dos meses
         // const objIndex = res.data.reduce((acc, currentValue) => {
@@ -161,42 +193,24 @@ const FileUploadContext = ({ children }) => {
         });
 
         let dataCategory = [];
-        for (let key in somaClassObj){
+        for (let key in somaClassObj) {
           dataCategory.push(somaClassObj[key] ?? 0);
         }
 
         // Dados do gráfico
         const dataChart = {
           labels: labels, // Rótulos do eixo X
-          datasets: [{
-            data: dataCategory,
-            backgroundColor: bgcolor,
-          }],
+          datasets: [
+            {
+              data: dataCategory,
+              backgroundColor: bgcolor,
+            },
+          ],
         };
         setDataMonthly(dataChart);
       })
       .catch((error) => console.log(error));
   });
-
-  function formatCurrency(valor) {
-    // Formatação para moeda em português do Brasil (BRL - Real)
-    const valorFloat = parseFloat(valor.replace(/\./g, "").replace(",", "."));
-    const valorFormatado = new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(valorFloat);
-    return valorFormatado;
-  }
-
-  function formatCurrencyFloat(valor) {
-    // Formatação para moeda em português do Brasil (BRL - Real)
-    const valorFloat = parseFloat(valor);
-    const valorFormatado = new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(valorFloat);
-    return valorFormatado;
-  }
 
   function lerArquivo() {
     let idNum = 0;
@@ -312,6 +326,13 @@ const FileUploadContext = ({ children }) => {
         },
       };
       const result = clientAxios.post("/CartItemIns", newCartItems);
+      await queryClient.invalidateQueries({
+        queryKey: ["dataCartYear"],
+        refetchType: "active",
+        refetchActive: true,
+        refetchInactive: false,
+      });
+      queryClient.refetchQueries(["dataCartYear"]);      
       return result;
     },
   });
@@ -411,19 +432,7 @@ const FileUploadContext = ({ children }) => {
     });
   }
 
-  // function gravarItems(year, month) {
-
-  //     client.post('/CartItemIns', {
-  //         cart: {
-  //             newCartItems
-  //         }
-  //     })
-  //         .then((response) => {
-  //             console.log(response);
-  //         })
-  // }
-
-  return (
+   return (
     <>
       <fileUploadContext.Provider
         value={{
@@ -449,6 +458,12 @@ const FileUploadContext = ({ children }) => {
           setMessageDialog,
           dataChart,
           dataMonthly,
+          queryMonth,
+          queryInfo,
+          session,
+          setSession,
+          loading,
+          setLoading,
         }}
       >
         {children}
