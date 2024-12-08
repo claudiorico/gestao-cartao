@@ -1,13 +1,10 @@
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
 import Layout from "./layouts/dashboard.jsx";
 import OAuthSignInPage from "./pages/Login.jsx";
-import SignInPage from "./pages/SignInPage.jsx";
 import ProtectedRoutes from "./pages/ProtectedRoute.jsx";
-import EditTable from "../components/EditTable.jsx";
 import FileUploadContext from "../context/FileUploadContext.jsx";
 import EditTableUpdate from "../components/EditTableUpdate.jsx";
 import PageContainer from "../src/layouts/container.jsx";

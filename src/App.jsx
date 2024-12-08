@@ -5,13 +5,11 @@ import { AppProvider } from "@toolpad/core/react-router-dom";
 import { Outlet } from "react-router-dom";
 import SnackbarAlert from "../components/MessageAlert.jsx";
 import { createTheme } from "@mui/material/styles";
-import { useState, useMemo } from "react";
-import OAuthSignInPage from "./pages/Login.jsx";
+import { useMemo } from "react";
 import { useFileUploadContext } from "../context/FileUploadContext.jsx";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "./pages/firebase.js";
-import { Account } from '@toolpad/core/Account';
 
 const NAVIGATION = [
   {
