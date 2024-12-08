@@ -318,6 +318,10 @@ const FileUploadContext = ({ children }) => {
       });
       const newCartItems = {
         cart: {
+          user: {
+            name: session.user.name,
+            email: session.user.email,
+          },
           header: {
             reference: year + month,
             totalvalue: totalValue,
