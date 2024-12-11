@@ -4,7 +4,6 @@ import { useFileUploadContext } from "../../context/FileUploadContext";
 
 const ProtectedRoute = () => {
   const { session, loading } = useFileUploadContext();
-  console.log('passou pelo Protected');
   if (loading) {
     return <div>Carregando...</div>; // Você pode substituir por um spinner ou outro indicador de carregamento
   }

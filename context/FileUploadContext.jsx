@@ -12,7 +12,8 @@ import { formatCurrency, formatCurrencyFloat } from "../src/auxiliares/functions
 export const fileUploadContext = createContext(null);
 export const useFileUploadContext = () => useContext(fileUploadContext);
 
-const clientAxios = axios.create({ baseURL: "http://localhost:3080/Cart" });
+const baseUrl = import.meta.env.VITE_api_url;
+const clientAxios = axios.create({ baseURL: baseUrl });
 
 const FileUploadContext = ({ children }) => {
   const [file, setFile] = useState(null);
@@ -34,7 +35,8 @@ const FileUploadContext = ({ children }) => {
   const [messageDialog, setMessageDialog] = useState(
     ""
   );
-  const [messageObj, setMessage] = useState({severity: '',
+  const [messageObj, setMessage] = useState({
+    severity: '',
     message: ''
   });
 
@@ -50,16 +52,20 @@ const FileUploadContext = ({ children }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      const userlogin = {
-        user: {
-          name: currentUser.displayName,
-          email: currentUser.email,
-          image: currentUser.photoURL,
-        },
-      };
-      console.log(userlogin);
-      setSession(userlogin);
-      setLoading(false);
+
+      if (currentUser) {
+        const userlogin = {
+          user: {
+            name: currentUser.displayName,
+            email: currentUser.email,
+            image: currentUser.photoURL,
+          },
+        };
+        console.log(userlogin);
+        setSession(userlogin);
+        setLoading(false);
+
+      }
     });
 
     return () => unsubscribe();
@@ -85,7 +91,12 @@ const FileUploadContext = ({ children }) => {
       }
     }
 
-    clientAxios.post(`/YearDetail`, refKeys).then((res) => {
+    if(!session.user.name){
+      return;
+    }
+    console.log(session);
+
+    clientAxios.post(`/YearDetail/${session.user.email}`, refKeys).then((res) => {
       if (res.data) {
         //Criando um objeto indexado com os dados dos meses
         const objIndex = res.data.reduce((acc, currentValue) => {
@@ -157,8 +168,12 @@ const FileUploadContext = ({ children }) => {
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear().toString();
 
+    if(!session.user.name){
+      return;
+    }
+    console.log(session);
     clientAxios
-      .get(`/CartItems/${currentYear + currentMonth}`)
+      .get(`/CartItems/${currentYear + currentMonth}/${session.user.email}`)
       .then((res) => {
         console.log(res.data);
         const { CartDetails } = res.data;
@@ -336,7 +351,7 @@ const FileUploadContext = ({ children }) => {
         refetchActive: true,
         refetchInactive: false,
       });
-      queryClient.refetchQueries(["dataCartYear"]);      
+      queryClient.refetchQueries(["dataCartYear"]);
       return result;
     },
   });
@@ -358,6 +373,10 @@ const FileUploadContext = ({ children }) => {
       });
       const newCartItems = {
         cart: {
+          user: {
+            name: session.user.name,
+            email: session.user.email,
+          },          
           header: {
             reference: year + month,
             totalvalue: totalValue,
@@ -400,7 +419,7 @@ const FileUploadContext = ({ children }) => {
     mutationFn: async (refKey) => {
       const refExist = await getRefKey(refKey);
       if (refExist > 0) {
-        const countDeleted = await clientAxios.delete(`/ItemsDetail/${refKey}`);
+        const countDeleted = await clientAxios.delete(`/ItemsDetail/${refKey}/${session.user.email}`);
         if (countDeleted.status < 400) {
           sendMessage("success", countDeleted.data.resposta);
         } else {
@@ -425,7 +444,7 @@ const FileUploadContext = ({ children }) => {
   });
 
   async function getRefKey(refKey) {
-    const resposta = await clientAxios.get(`/CheckRefKey/${refKey}`);
+    const resposta = await clientAxios.get(`/CheckRefKey/${refKey}/${session.user.email}`);
     return resposta.data;
   }
 
@@ -436,7 +455,7 @@ const FileUploadContext = ({ children }) => {
     });
   }
 
-   return (
+  return (
     <>
       <fileUploadContext.Provider
         value={{

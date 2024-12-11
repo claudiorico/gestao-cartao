@@ -3,7 +3,6 @@ import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { PageContainer } from '@toolpad/core/PageContainer';
 
 export default function Layout() {
-  console.log('Layout entrou');
   return (
     <DashboardLayout defaultSidebarCollapsed style={{ flex: 1, border: 0 }}>
       <PageContainer>

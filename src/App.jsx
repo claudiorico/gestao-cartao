@@ -62,14 +62,6 @@ export default function App() {
   const authentication = useMemo(() => {
     return {
       signIn: () => {
-        // setSession({
-        //   user: {
-        //     name: "Bharat Kashyap",
-        //     email: "bharatkashyap@outlook.com",
-        //     image: "https://avatars.githubusercontent.com/u/19550456",
-        //   },
-        // });
-        //<OAuthSignInPage/>
         navigate('login');
       },
       signOut: async () => {
@@ -84,7 +76,6 @@ export default function App() {
       },
     };
   }, []);
-  console.log('App session', session);
 
   return (
     <AppProvider

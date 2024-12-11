@@ -7,17 +7,11 @@ import estilos from "./../css/ButtonNavegation.module.css";
 import PolarAreaChart from "../../components/ChartPolarArea.jsx";
 
 export default function PageContainer() {
-  //   const { queryInfo } = useFileUploadContext();
-
-  //     console.log(queryInfo);
-  //   if (queryInfo.isLoading) return "Carregando...";
-  //   if (queryInfo.error) return <div>Error: {queryInfo.error.message}</div>;
 
   let selectItem = 0;
 
   function handleButtonLeft(event) {
     const carrossel = document.getElementById("carrossel__imagens");
-    console.log(carrossel);
     selectItem += 1;
     if (selectItem >= 2) {
       selectItem = 2;
@@ -30,7 +24,6 @@ export default function PageContainer() {
     // const carrossel = document.getElementById("carrossel__imagens");
     // carrossel.classList.toggle(estilos.carrossel__move);
     const carrossel = document.getElementById("carrossel__imagens");
-    console.log(carrossel);
     selectItem -= 1;
     if (selectItem <= 0) {
       selectItem = 0;
@@ -85,49 +78,6 @@ export default function PageContainer() {
           </Box>
         </div>
       </div>
-
-      {/* <Box
-        sx={{
-          position: "relative",
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            //   justifyContent: "center",
-            alignItems: "center",
-            width: "100%",
-            height: "100%",
-            overflowX: "auto",
-            scrollBehavior: "smooth",
-            transform: "translateX(-60%)",
-          }}
-          //   style={"transform: translateX(-100%)"}
-        >
-          {/* Gráfico 1 }
-          <Box
-            sx={{
-              flexBasis: "100%",
-              flexShrink: 0,
-              height: "100%",
-              backgroundColor: "#ffcccb",
-            }}
-          >
-            <BarChart />
-          </Box>
-          <Box
-            sx={{
-              flexBasis: "100%",
-              flexShrink: 0,
-              height: "100%",
-              backgroundColor: "#add8e6",
-            }}
-          >
-            <ChartMonthly />
-          </Box>
-        </Box>
-      </Box> */}
     </>
   );
 }
