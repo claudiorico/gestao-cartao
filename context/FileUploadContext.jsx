@@ -114,6 +114,7 @@ const FileUploadContext = ({ children }) => {
             selectOptions.forEach((classEl) => {
               let somaClass = 0;
               for (const el in objIndex[ref.refkey]) {
+                console.log(objIndex[ref.refkey][el]);
                 if (
                   objIndex[ref.refkey][el].Classification.classification ===
                   classEl
