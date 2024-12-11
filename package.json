@@ -1,5 +1,6 @@
 {
   "name": "gestao-cartao",
+  "homepage": "https://claudiorico.github.io/gestao-cartao/",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -8,7 +9,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "deploy": "vite build && gh-pages -d dist"
+    "predeploy": "npm run deploy",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
