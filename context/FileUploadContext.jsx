@@ -42,9 +42,9 @@ const FileUploadContext = ({ children }) => {
 
   const [session, setSession] = useState({
     user: {
-      name: "",
-      email: "",
-      image: "",
+      name: null,
+      email: null,
+      image: null,
     },
   });
 
@@ -61,7 +61,7 @@ const FileUploadContext = ({ children }) => {
             image: currentUser.photoURL,
           },
         };
-        console.log(userlogin);
+        console.log(userlogin, "passou aqui");
         setSession(userlogin);
         setLoading(false);
 
@@ -78,7 +78,7 @@ const FileUploadContext = ({ children }) => {
     // Obtém o ano atual
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth();
-    const selectedYear = 2024;
+    let selectedYear = 2024;
 
     let labels = [];
     let refKeys = [];
@@ -86,15 +86,17 @@ const FileUploadContext = ({ children }) => {
     if (currentYear === selectedYear) {
       for (let index = 0; index < 12; index++) {
         monthIdx = monthIdx === 0 ? 11 : monthIdx - 1;
+        if(monthIdx===11){
+          selectedYear -= 1;
+        }
         labels[index] = months[monthIdx].label;
         refKeys[index] = { refkey: selectedYear + months[monthIdx].value };
       }
     }
 
-    if(!session.user.name){
+    if(!session.user.name || !session.user ){
       return;
     }
-    console.log(session);
 
     clientAxios.post(`/YearDetail/${session.user.email}`, refKeys).then((res) => {
       if (res.data) {
@@ -114,7 +116,6 @@ const FileUploadContext = ({ children }) => {
             selectOptions.forEach((classEl) => {
               let somaClass = 0;
               for (const el in objIndex[ref.refkey]) {
-                console.log(objIndex[ref.refkey][el]);
                 if (
                   objIndex[ref.refkey][el].Classification.classification ===
                   classEl
@@ -172,25 +173,18 @@ const FileUploadContext = ({ children }) => {
     if(!session.user.name){
       return;
     }
-    console.log(session);
+    
     clientAxios
       .get(`/CartItems/${currentYear + currentMonth}/${session.user.email}`)
       .then((res) => {
-        console.log(res.data);
+
         const { CartDetails } = res.data;
 
-        // const reference = currentYear + currentMonth;
+        if(!CartDetails){
+          return;
+        }
+
         let labels = [];
-        // //Criando um objeto indexado com os dados dos meses
-        // const objIndex = res.data.reduce((acc, currentValue) => {
-        //   // const { reference } = currentValue;
-
-        //   acc[reference] = currentValue;
-        //   return acc;
-        // }, {});
-
-        // console.log(objIndex);
-
         let somaClassObj = {};
         const bgcolor = [];
         selectOptions.forEach((classEl, index) => {

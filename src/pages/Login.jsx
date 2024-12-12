@@ -1,42 +1,19 @@
-import * as React from "react";
 import { AppProvider } from "@toolpad/core/AppProvider";
 import { SignInPage } from "@toolpad/core/SignInPage";
-import { Account } from "@toolpad/core";
 import { useTheme } from "@mui/material/styles";
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "./firebase";
 import { useNavigate } from "react-router-dom";
 import { useFileUploadContext } from "../../context/FileUploadContext";
+import { Typography, Alert } from "@mui/material";
 
 // preview-start
 const providers = [
-  // { id: "github", name: "GitHub" },
   { id: "google", name: "Google" },
-  // { id: "facebook", name: "Facebook" },
-  // { id: "twitter", name: "Twitter" },
-  // { id: "linkedin", name: "LinkedIn" },
 ];
-
-const demoSession = {
-  user: {
-    name: "Bharat Kashyap",
-    email: "bharatkashyap@outlook.com",
-    image: "https://avatars.githubusercontent.com/u/19550456",
-  },
-};
-// preview-end
 
 export default function OAuthSignInPage() {
   const { setSession } = useFileUploadContext();
-
-  //   const signIn = async (provider) => {
-  //     const promise = new Promise((resolve) => {
-  //       console.log(`Sign in with ${provider.id}`);
-  //       setSession(demoSession);
-  //       resolve();
-  //     });
-  //     return promise;
-  //   };
 
   const navigate = useNavigate();
 
@@ -70,10 +47,7 @@ export default function OAuthSignInPage() {
 
           //return user;
 
-          //   // Configurando o usuário no Account
-          //   Account.signIn({ user });
-
-          //   // Redireciona para o Dashboard
+          // Redireciona para o Dashboard
           setSession(userlogin);
           navigate("/");
           resolve();
@@ -86,10 +60,32 @@ export default function OAuthSignInPage() {
   };
 
   const theme = useTheme();
+
+  const BRANDING = {
+    title: "Gestão de Gastos - Cartão",
+    logo: <img src="cart.svg" alt="Logo Cart" style={{width:"80px"}} />,
+  };
+
+  const Title = () => {
+    return (
+      <Typography variant="h4" component="h1" gutterBottom>
+        Welcome Back!
+      </Typography>
+    );
+  };
+  
+  const Subtitle = () => {
+    return (
+      <Typography variant="body1" color="textSecondary" gutterBottom>
+        Sign in to your account
+      </Typography>
+    );
+  };
+  
   return (
     // preview-start
-    <AppProvider theme={theme}>
-      <SignInPage signIn={handleGoogleSignIn} providers={providers} />
+    <AppProvider theme={theme} branding={BRANDING}>
+      <SignInPage signIn={handleGoogleSignIn} slots={{title: Title, subtitle: Subtitle }} providers={providers}  />
     </AppProvider>
     // preview-end
   );
