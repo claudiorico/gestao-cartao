@@ -63,7 +63,7 @@ export default function OAuthSignInPage() {
 
   const BRANDING = {
     title: "Gestão de Gastos - Cartão",
-    logo: <img src="cart.svg" alt="Logo Cart" style={{width:"80px"}} />,
+    logo: <img src="cart.svg" alt="Logo Cart" style={{ width: "80px" }} />,
   };
 
   const Title = () => {
@@ -73,7 +73,7 @@ export default function OAuthSignInPage() {
       </Typography>
     );
   };
-  
+
   const Subtitle = () => {
     return (
       <Typography variant="body1" color="textSecondary" gutterBottom>
@@ -81,11 +81,16 @@ export default function OAuthSignInPage() {
       </Typography>
     );
   };
-  
+
   return (
     // preview-start
     <AppProvider theme={theme} branding={BRANDING}>
-      <SignInPage signIn={handleGoogleSignIn} slots={{title: Title, subtitle: Subtitle }} providers={providers}  />
+      <SignInPage signIn={handleGoogleSignIn}
+        slots={{
+          title: () => <h1 style={{ color: '#1976d2' }}>Bem-vindo ao Meu App</h1>,
+          subtitle: () => <h2 style={{ color: '#555' }}>Faça login para continuar</h2>,
+        }}
+        providers={providers} />
     </AppProvider>
     // preview-end
   );

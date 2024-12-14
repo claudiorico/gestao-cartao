@@ -26,3 +26,13 @@
 }
 
 
+/* Substituir estilos e conteúdo */
+.MuiSignInPage-title {
+  content: 'Bem-vindo ao Meu App' !important;
+  color: #1976d2;
+}
+
+.MuiSignInPage-subtitle {
+  content: 'Faça login para continuar' !important;
+  color: #555;
+}

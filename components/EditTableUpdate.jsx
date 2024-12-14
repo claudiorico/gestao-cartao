@@ -22,6 +22,8 @@ import {
 } from "./tableStyled.jsx";
 import { selectOptions, months } from "../context/Constans.js";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { formatCurrencyFloat } from "../src/auxiliares/functions.js";
 
 const EditTableUpdate = () => {
   const {
@@ -32,7 +34,10 @@ const EditTableUpdate = () => {
     setDataUpd,
     deletarItem,
     deletarRefKey,
-    setMessageDialog
+    setMessageDialog,
+    setData,
+    gravarItems,
+    sendMessage
   } = useFileUploadContext();
 
   // Obtém o ano atual
@@ -67,13 +72,38 @@ const EditTableUpdate = () => {
     carregarExtrato.mutate(selectedYear + selectedMonth);
   }
 
+  function createItems() {
+    setData([...dataUpd]);
+    gravarItems.mutate(
+      { year: selectedYear, month: selectedMonth, items: dataUpd },
+      {
+        onSuccess: (resposta) => {
+          console.log(resposta);
+          sendMessage("success", resposta.data);
+        },
+        onError: (error) => {
+          console.error("Erro:", error);
+        },
+      }
+    );
+  }
+
   function handleUpdItems() {
     ifRefExist.mutate(selectedYear + selectedMonth, {
       onSuccess: (data) => {
+        console.log(data);
         if (data) {
-          console.log(months[selectedMonth].label, selectedYear);
-          setMessageDialog(`Gostaria de Atualizar os registros, referente ao mês ${months[selectedMonth].label} do ano ${selectedYear}`);
-          setOpenDialog({open: true, type: 'update', refkey: selectedYear + selectedMonth });
+          console.log(months[Number(selectedMonth) - 1].label, selectedYear);
+          setMessageDialog(
+            `Gostaria de Atualizar os registros, referente ao mês ${months[Number(selectedMonth) - 1].label} do ano ${selectedYear}`
+          );
+          setOpenDialog({
+            open: true,
+            type: "update",
+            refkey: selectedYear + selectedMonth,
+          });
+        } else {
+          createItems();
         }
       },
       onError: (error) => {
@@ -86,10 +116,40 @@ const EditTableUpdate = () => {
   const handleDelete = (id) => {
     deletarItem.mutate(id);
   };
-  
+
   const handleDeleteData = () => {
     deletarRefKey.mutate(selectedYear + selectedMonth);
-  }
+  };
+
+  // Novo registro
+  const [newRow, setNewRow] = useState({
+    data: "",
+    descricao: "",
+    valor: "",
+    classificacao: "",
+  });
+
+  // Função para adicionar uma nova linha
+  const addRow = () => {
+    if (
+      newRow.data &&
+      newRow.descricao &&
+      newRow.valor &&
+      newRow.classificacao
+    ) {
+      setDataUpd([
+        ...dataUpd,
+        {
+          ...newRow,
+          id: 900 + (dataUpd?.length + 1),
+          valor: formatCurrencyFloat(newRow.valor),
+          valorReal: newRow.valor,
+        },
+      ]);
+      console.log(dataUpd);
+      setNewRow({ data: "", descricao: "", valor: "", classificacao: "" }); // Limpa os campos
+    }
+  };
 
   return (
     <>
@@ -167,7 +227,7 @@ const EditTableUpdate = () => {
               onClick={handleDeleteData}
             >
               Deletar Extrato
-            </Button>            
+            </Button>
             <Button
               variant="contained"
               color="primary"
@@ -195,6 +255,72 @@ const EditTableUpdate = () => {
             </TableRow>
           </TableHead>
           <TableBody>
+            <StyledTableRow>
+              <StyledTableCell>{newRow.id}</StyledTableCell>
+              <StyledTableCell>
+                <TextField
+                  label="Data"
+                  variant="outlined"
+                  size="small"
+                  value={newRow.data}
+                  onChange={(e) =>
+                    setNewRow({ ...newRow, data: e.target.value })
+                  }
+                  placeholder="dd/MM/yyyy"
+                  sx={{ mr: 1 }}
+                ></TextField>
+              </StyledTableCell>
+              <StyledTableCell>
+                <TextField
+                  label="Descrição"
+                  variant="outlined"
+                  size="small"
+                  value={newRow.descricao}
+                  onChange={(e) =>
+                    setNewRow({ ...newRow, descricao: e.target.value })
+                  }
+                  sx={{ mr: 1 }}
+                ></TextField>
+              </StyledTableCell>
+              <StyledTableCell>
+                <TextField
+                  label="Valor"
+                  variant="outlined"
+                  size="small"
+                  value={newRow.valor}
+                  onChange={(e) =>
+                    setNewRow({ ...newRow, valor: e.target.value })
+                  }
+                  sx={{ mr: 1 }}
+                ></TextField>
+              </StyledTableCell>
+              <StyledTableCell>
+                <CustomSelect
+                  id="classificacao"
+                  value={newRow.classificacao}
+                  label="Classificação"
+                  onChange={(e) =>
+                    setNewRow({ ...newRow, classificacao: e.target.value })
+                  }
+                >
+                  {selectOptions.map((op) => (
+                    <MenuItem key={op} value={op}>
+                      {op}
+                    </MenuItem>
+                  ))}
+                </CustomSelect>
+              </StyledTableCell>
+              <StyledTableCell align="center">
+                <IconButton
+                  aria-label="success"
+                  color="success"
+                  onClick={addRow}
+                >
+                  <AddCircleOutlineIcon />
+                </IconButton>
+              </StyledTableCell>
+            </StyledTableRow>
+
             {dataUpd.map((row, index) => (
               <StyledTableRow key={row.id}>
                 <StyledTableCell>{row.id}</StyledTableCell>

@@ -1,13 +1,16 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import Papa from "papaparse";
 import axios from "axios";
 import { months, selectOptions, backgroundColor } from "./Constans";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../src/pages/firebase.js";
-import { formatCurrency, formatCurrencyFloat } from "../src/auxiliares/functions.js";
+import {
+  formatCurrency,
+  formatCurrencyFloat,
+} from "../src/auxiliares/functions.js";
 
 export const fileUploadContext = createContext(null);
 export const useFileUploadContext = () => useContext(fileUploadContext);
@@ -32,12 +35,10 @@ const FileUploadContext = ({ children }) => {
     type: "create",
     refkey: "",
   });
-  const [messageDialog, setMessageDialog] = useState(
-    ""
-  );
+  const [messageDialog, setMessageDialog] = useState("");
   const [messageObj, setMessage] = useState({
-    severity: '',
-    message: ''
+    severity: "",
+    message: "",
   });
 
   const [session, setSession] = useState({
@@ -52,7 +53,6 @@ const FileUploadContext = ({ children }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-
       if (currentUser) {
         const userlogin = {
           user: {
@@ -61,10 +61,8 @@ const FileUploadContext = ({ children }) => {
             image: currentUser.photoURL,
           },
         };
-        console.log(userlogin, "passou aqui");
         setSession(userlogin);
         setLoading(false);
-
       }
     });
 
@@ -86,7 +84,7 @@ const FileUploadContext = ({ children }) => {
     if (currentYear === selectedYear) {
       for (let index = 0; index < 12; index++) {
         monthIdx = monthIdx === 0 ? 11 : monthIdx - 1;
-        if(monthIdx===11){
+        if (monthIdx === 11) {
           selectedYear -= 1;
         }
         labels[index] = months[monthIdx].label;
@@ -94,93 +92,94 @@ const FileUploadContext = ({ children }) => {
       }
     }
 
-    if(!session.user.name || !session.user ){
+    if (!session.user.name || !session.user) {
       return;
     }
 
-    clientAxios.post(`/YearDetail/${session.user.email}`, refKeys).then((res) => {
-      if (res.data) {
-        //Criando um objeto indexado com os dados dos meses
-        const objIndex = res.data.reduce((acc, currentValue) => {
-          const { reference } = currentValue;
-          acc[reference] = currentValue.CartDetails;
-          return acc;
-        }, {});
+    clientAxios
+      .post(`/YearDetail/${session.user.email}`, refKeys)
+      .then((res) => {
+        if (res.data) {
+          //Criando um objeto indexado com os dados dos meses
+          const objIndex = res.data.reduce((acc, currentValue) => {
+            const { reference } = currentValue;
+            acc[reference] = currentValue.CartDetails;
+            return acc;
+          }, {});
 
-        //{ ...cartItems, [productID]: cartItems[productID] - 1 }
-        let somaMeses = {};
-        refKeys.forEach((ref) => {
-          let somaClassObj = {};
+          //{ ...cartItems, [productID]: cartItems[productID] - 1 }
+          let somaMeses = {};
+          refKeys.forEach((ref) => {
+            let somaClassObj = {};
 
-          if (ref.refkey in objIndex) {
-            selectOptions.forEach((classEl) => {
-              let somaClass = 0;
-              for (const el in objIndex[ref.refkey]) {
-                if (
-                  objIndex[ref.refkey][el].Classification.classification ===
-                  classEl
-                ) {
-                  somaClass = somaClass + objIndex[ref.refkey][el].value;
+            if (ref.refkey in objIndex) {
+              selectOptions.forEach((classEl) => {
+                let somaClass = 0;
+                for (const el in objIndex[ref.refkey]) {
+                  if (
+                    objIndex[ref.refkey][el].Classification.classification ===
+                    classEl
+                  ) {
+                    somaClass = somaClass + objIndex[ref.refkey][el].value;
+                  }
                 }
-              }
-              somaClassObj = {
-                ...somaClassObj,
-                [classEl]: (somaClassObj[classEl] ?? 0) + somaClass,
-              };
-            });
-            somaMeses = { ...somaMeses, [ref.refkey]: somaClassObj };
-          } else {
-            selectOptions.forEach((classEl) => {
-              somaClassObj = {
-                ...somaClassObj,
-                [classEl]: 0,
-              };
-            });
-            somaMeses = { ...somaMeses, [ref.refkey]: somaClassObj };
-          }
-        });
-
-        const dataSets = selectOptions.map((ref) => {
-          let dataCategory = [];
-          refKeys.forEach((el) => {
-            for (const category in somaMeses[el.refkey]) {
-              if (category === ref) {
-                dataCategory.push(somaMeses[el.refkey][category] ?? 0);
-              }
+                somaClassObj = {
+                  ...somaClassObj,
+                  [classEl]: (somaClassObj[classEl] ?? 0) + somaClass,
+                };
+              });
+              somaMeses = { ...somaMeses, [ref.refkey]: somaClassObj };
+            } else {
+              selectOptions.forEach((classEl) => {
+                somaClassObj = {
+                  ...somaClassObj,
+                  [classEl]: 0,
+                };
+              });
+              somaMeses = { ...somaMeses, [ref.refkey]: somaClassObj };
             }
           });
-          return {
-            label: ref,
-            data: dataCategory,
-            backgroundColor: backgroundColor[ref],
-          };
-        });
 
-        // Dados do gráfico
-        const dataChart = {
-          labels: labels, // Rótulos do eixo X
-          datasets: dataSets,
-        };
-        setDataChart(dataChart);
-      }
-    });
+          const dataSets = selectOptions.map((ref) => {
+            let dataCategory = [];
+            refKeys.forEach((el) => {
+              for (const category in somaMeses[el.refkey]) {
+                if (category === ref) {
+                  dataCategory.push(somaMeses[el.refkey][category] ?? 0);
+                }
+              }
+            });
+            return {
+              label: ref,
+              data: dataCategory,
+              backgroundColor: backgroundColor[ref],
+            };
+          });
+
+          // Dados do gráfico
+          const dataChart = {
+            labels: labels, // Rótulos do eixo X
+            datasets: dataSets,
+          };
+          setDataChart(dataChart);
+        }
+      });
   });
 
   const queryMonth = useQuery(["dataMonthly"], () => {
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear().toString();
 
-    if(!session.user.name){
+    if (!session.user.name) {
       return;
     }
-    
+
     clientAxios
       .get(`/CartItems/${currentYear + currentMonth}/${session.user.email}`)
       .then((res) => {
-
         const { CartDetails } = res.data;
 
-        if(!CartDetails){
+        if (!CartDetails) {
           return;
         }
 
@@ -259,7 +258,9 @@ const FileUploadContext = ({ children }) => {
 
   const carregarExtrato = useMutation({
     mutationFn: async (refKey) => {
-      const resposta = await clientAxios.get(`/CartItems/${refKey}`);
+      const resposta = await clientAxios.get(
+        `/CartItems/${refKey}/${session.user.email}`
+      );
       return resposta.data;
       // console.log('api',resposta);
       // if (resposta.status >= 400) {
@@ -285,9 +286,10 @@ const FileUploadContext = ({ children }) => {
     },
     onSuccess: (data) => {
       const elements = data.CartDetails.map((element) => {
+        const fixedDate = parseISO(element.date);
         const dataRow = {
           id: element.id,
-          data: format(new Date(element.date), "dd/MM/yyyy", { locale: ptBR }),
+          data: format(fixedDate, "dd/MM/yyyy", { locale: ptBR }),
           descricao: element.description,
           valor: formatCurrencyFloat(element.value),
           valorReal: element.value,
@@ -305,8 +307,12 @@ const FileUploadContext = ({ children }) => {
 
   const gravarItems = useMutation({
     mutationFn: async (obj) => {
+      console.log("data", data);
+
+      let Items = obj?.items ? obj?.items : data;
+
       const { year, month } = obj;
-      const totalValue = data.reduce((acc, obj) => {
+      const totalValue = Items.reduce((acc, obj) => {
         return (acc =
           acc +
           parseFloat(
@@ -316,7 +322,7 @@ const FileUploadContext = ({ children }) => {
           ));
       }, 0);
       // const ItemsArray = [];
-      const ItemsArray = data.map((it) => {
+      const ItemsArray = Items.map((it) => {
         return {
           date: it.data,
           description: it.descricao,
@@ -355,23 +361,56 @@ const FileUploadContext = ({ children }) => {
     mutationFn: async (obj) => {
       const { year, month } = obj;
       const totalValue = dataUpd.reduce((acc, obj) => {
-        return (acc = acc + obj.valorReal);
+        return (acc = acc + parseFloat(obj.valorReal));
       }, 0);
-      // const ItemsArray = [];
-      const ItemsArray = dataUpd.map((it) => {
-        return {
-          date: it.data,
-          description: it.descricao,
-          value: it.valorReal,
-          classification: it.classificacao,
+
+      //Separar os itens que são novos para fazer o INSERT
+      const ItemsArrayIns = dataUpd
+        .filter((it) => it.id > 900)
+        .map((it) => {
+          return {
+            date: it.data,
+            description: it.descricao,
+            value: it.valorReal,
+            classification: it.classificacao,
+          };
+        });
+
+      // Itens de update
+      const ItemsArray = dataUpd
+        .filter((it) => it.id < 900)
+        .map((it) => {
+          return {
+            date: it.data,
+            description: it.descricao,
+            value: it.valorReal,
+            classification: it.classificacao,
+          };
+        });
+      console.log(ItemsArrayIns);
+      if (ItemsArrayIns) {
+        const newCartItemsIns = {
+          cart: {
+            user: {
+              name: session.user.name,
+              email: session.user.email,
+            },
+            header: {
+              reference: year + month,
+              totalvalue: totalValue,
+            },
+            Items: ItemsArrayIns,
+          },
         };
-      });
+        const resultIns = clientAxios.post("/CartItemIns", newCartItemsIns);
+      }
+
       const newCartItems = {
         cart: {
           user: {
             name: session.user.name,
             email: session.user.email,
-          },          
+          },
           header: {
             reference: year + month,
             totalvalue: totalValue,
@@ -414,7 +453,9 @@ const FileUploadContext = ({ children }) => {
     mutationFn: async (refKey) => {
       const refExist = await getRefKey(refKey);
       if (refExist > 0) {
-        const countDeleted = await clientAxios.delete(`/ItemsDetail/${refKey}/${session.user.email}`);
+        const countDeleted = await clientAxios.delete(
+          `/ItemsDetail/${refKey}/${session.user.email}`
+        );
         if (countDeleted.status < 400) {
           sendMessage("success", countDeleted.data.resposta);
         } else {
@@ -439,7 +480,11 @@ const FileUploadContext = ({ children }) => {
   });
 
   async function getRefKey(refKey) {
-    const resposta = await clientAxios.get(`/CheckRefKey/${refKey}/${session.user.email}`);
+    console.log(refKey);
+    const resposta = await clientAxios.get(
+      `/CheckRefKey/${refKey}/${session.user.email}`
+    );
+    console.log(resposta.data);
     return resposta.data;
   }
 
