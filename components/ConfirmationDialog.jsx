@@ -21,7 +21,6 @@ function ConfirmationDialog() {
         if(openDialog.type === 'create'){
             deletarRefKey.mutate(openDialog.refkey,{
                 onSuccess: () => {
-                    console.log('passou aqui');
                     gravarItems.mutate(
                         { year: openDialog.refkey.substring(4,0), month: openDialog.refkey.substring(4) },
                         {

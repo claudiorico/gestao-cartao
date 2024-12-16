@@ -14,7 +14,7 @@ import {
 
 export const fileUploadContext = createContext(null);
 export const useFileUploadContext = () => useContext(fileUploadContext);
-
+ 
 const baseUrl = import.meta.env.VITE_api_url;
 const clientAxios = axios.create({ baseURL: baseUrl });
 
@@ -250,7 +250,7 @@ const FileUploadContext = ({ children }) => {
           sendMessage("success", "Carregamento completo!");
         },
         error: (error) => {
-          sendMessage("error", `Erro ao processar o arquivo:, ${error}`);
+          sendMessage("error", `Erro ao processar o arquivo:, ${error.message }`);
         },
       });
     }
@@ -285,6 +285,10 @@ const FileUploadContext = ({ children }) => {
       // return cartData;
     },
     onSuccess: (data) => {
+      console.log(data);
+      if(!data.CartDetails){
+        return sendMessage("success", "Registro não encontrado!" );
+      }
       const elements = data.CartDetails.map((element) => {
         const fixedDate = parseISO(element.date);
         const dataRow = {
@@ -301,7 +305,7 @@ const FileUploadContext = ({ children }) => {
     },
     onError: (error) => {
       console.error("Erro:", error);
-      sendMessage("error", error.response.data);
+      sendMessage("error", error.message );
     },
   });
 

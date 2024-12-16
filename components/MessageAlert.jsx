@@ -20,7 +20,7 @@ function SnackbarAlert() {
 
     return (
         <>
-            { messageObj && 
+            { messageObj.message && 
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                 <Alert onClose={handleClose} severity={messageObj.severity} sx={{ width: '100%' }}>
                     {messageObj.message}
