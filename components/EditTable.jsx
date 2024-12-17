@@ -21,6 +21,20 @@ import {
   StyledTableRow,
   CustomSelect,
 } from "./tableStyled.jsx";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { styled } from "@mui/material/styles";
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
 
 const EditTable = ({ uploadActive = false }) => {
   const {
@@ -67,6 +81,11 @@ const EditTable = ({ uploadActive = false }) => {
     setFile(newFile);
   }
 
+  function handleLoadFileButton(event) {
+    console.log(event.target.files[0]);
+    lerArquivo(event.target.files[0]);
+  }
+
   function handleLoadFile() {
     lerArquivo();
   }
@@ -109,7 +128,7 @@ const EditTable = ({ uploadActive = false }) => {
               alignItems: "center",
             }}
           >
-            <MuiFileInput
+            {/* <MuiFileInput
               style={{ margin: "10px" }}
               label="Caminho do Arquivo:"
               value={file}
@@ -133,9 +152,34 @@ const EditTable = ({ uploadActive = false }) => {
                   padding: "10px",
                   color: "#1976d2", // Altera a cor do texto do arquivo
                   fontWeight: "bold", // Personalização extra
-                }
+                },
               }}
-            />
+            /> */}
+
+            <Button
+              component="label"
+              role={undefined}
+              variant="contained"
+              tabIndex={-1}
+              startIcon={<CloudUploadIcon />}
+              sx={{
+                width: 300,
+                // marginTop: 2,
+                "& .MuiInputBase-input": {
+                  padding: "10px",
+                  color: "#1976d2", // Altera a cor do texto do arquivo
+                  fontWeight: "bold", // Personalização extra
+                },
+              }}
+            >
+              Carregar Arquivo
+              <VisuallyHiddenInput
+                type="file"
+                onChange={(event) => handleLoadFileButton(event)}
+                multiple
+              />
+            </Button>
+
             <TextField
               className={style.SelectField}
               id="outlined-select-year"
@@ -186,21 +230,21 @@ const EditTable = ({ uploadActive = false }) => {
               ))}
             </TextField>
             <Box>
-              <Button
+              {/* <Button
                 variant="contained"
                 color="primary"
                 style={{ margin: "10px" }}
                 onClick={handleLoadFile}
               >
                 Carregar Arquivo
-              </Button>
+              </Button> */}
               <Button
                 variant="contained"
                 color="primary"
                 style={{ margin: "10px" }}
                 onClick={handleAddItems}
               >
-                Adicionar Item
+                Salvar Modificações
               </Button>
             </Box>
           </Box>

@@ -221,10 +221,14 @@ const FileUploadContext = ({ children }) => {
       .catch((error) => console.log(error));
   });
 
-  function lerArquivo() {
+  function lerArquivo( newfile = null ) {
     let idNum = 0;
-    if (file) {
-      Papa.parse(file, {
+    let fileOrigem = file;
+    if(newfile){
+      fileOrigem = newfile;
+    }
+    if (fileOrigem) {
+      Papa.parse(fileOrigem, {
         header: true, // Define para converter cada linha em um objeto
         skipEmptyLines: true, // Ignora linhas vazias
         step: (row) => {
