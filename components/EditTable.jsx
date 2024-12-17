@@ -22,6 +22,7 @@ import {
   CustomSelect,
 } from "./tableStyled.jsx";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import SaveIcon from '@mui/icons-material/Save';
 import { styled } from "@mui/material/styles";
 
 const VisuallyHiddenInput = styled("input")({
@@ -119,7 +120,11 @@ const EditTable = ({ uploadActive = false }) => {
   return (
     <>
       <ConfirmationDialog />
-      <TableContainer component={Paper} style={{ overflowY: "hidden" }}>
+      <TableContainer component={Paper} style={{ overflowY: "hidden" }} sx={{height: {
+        sm: 150,
+        md: 300,
+        lg: 500
+      }}}>
         {uploadActive && (
           <Box
             sx={{
@@ -165,6 +170,7 @@ const EditTable = ({ uploadActive = false }) => {
               sx={{
                 width: 300,
                 // marginTop: 2,
+                // marginBottom: "10px",
                 "& .MuiInputBase-input": {
                   padding: "10px",
                   color: "#1976d2", // Altera a cor do texto do arquivo
@@ -189,15 +195,16 @@ const EditTable = ({ uploadActive = false }) => {
               onChange={handleYearChange}
               sx={{
                 width: 150,
+                margin: "10px",
                 // marginTop: 2,
                 "& .MuiInputBase-input": {
                   padding: "10px",
                   color: "#1976d2", // Altera a cor do texto do arquivo
                   fontWeight: "bold", // Personalização extra
                 },
-                "& .MuiSelect-root": {
-                  marginTop: "0",
-                },
+                // "& .MuiSelect-root": {
+                //   marginTop: "0",
+                // },
               }}
             >
               {years.map((year) => (
@@ -215,6 +222,7 @@ const EditTable = ({ uploadActive = false }) => {
               className="custom-select"
               sx={{
                 width: 150,
+                margin: "10px",
                 // marginTop: 2,
                 "& .MuiInputBase-input": {
                   padding: "10px",
@@ -241,8 +249,19 @@ const EditTable = ({ uploadActive = false }) => {
               <Button
                 variant="contained"
                 color="primary"
-                style={{ margin: "10px" }}
+                // style={{  }}
                 onClick={handleAddItems}
+                startIcon={<SaveIcon />}
+                sx={{
+                  width: 300,
+                  // marginBottom: "10px",
+                  // marginTop: 2,
+                  "& .MuiInputBase-input": {
+                    padding: "10px",
+                    color: "#1976d2", // Altera a cor do texto do arquivo
+                    fontWeight: "bold", // Personalização extra
+                  },
+                }}
               >
                 Salvar Modificações
               </Button>

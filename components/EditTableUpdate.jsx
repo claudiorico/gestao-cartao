@@ -22,6 +22,8 @@ import {
 } from "./tableStyled.jsx";
 import { selectOptions, months } from "../context/Constans.js";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
+import SaveIcon from '@mui/icons-material/Save';
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { formatCurrencyFloat } from "../src/auxiliares/functions.js";
 
@@ -217,6 +219,7 @@ const EditTableUpdate = () => {
               color="primary"
               style={{ margin: "10px" }}
               onClick={handleLoadData}
+              startIcon={<CloudDownloadIcon />}
             >
               Carregar Extrato
             </Button>
@@ -225,6 +228,7 @@ const EditTableUpdate = () => {
               color="primary"
               style={{ margin: "10px" }}
               onClick={handleDeleteData}
+              startIcon={<DeleteIcon />}
             >
               Deletar Extrato
             </Button>
@@ -233,6 +237,7 @@ const EditTableUpdate = () => {
               color="primary"
               style={{ margin: "10px" }}
               onClick={handleUpdItems}
+              startIcon={<SaveIcon />}
             >
               Atualizar Items
             </Button>
