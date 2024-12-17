@@ -5,7 +5,10 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "./firebase";
 import { useNavigate } from "react-router-dom";
 import { useFileUploadContext } from "../../context/FileUploadContext";
-import { Typography, Alert } from "@mui/material";
+import { Button, Box, Typography, Alert, Icon } from "@mui/material";
+import LoadingButton from '@mui/lab/LoadingButton';
+import GoogleIcon from "./Google.jsx";
+
 
 // preview-start
 const providers = [
@@ -13,7 +16,7 @@ const providers = [
 ];
 
 export default function OAuthSignInPage() {
-  const { setSession } = useFileUploadContext();
+  const { setSession, loading } = useFileUploadContext();
 
   const navigate = useNavigate();
 
@@ -63,7 +66,7 @@ export default function OAuthSignInPage() {
 
   const BRANDING = {
     title: "Gestão de Gastos - Cartão",
-    logo: <img src="cart.svg" alt="Logo Cart" style={{ width: "80px" }} />,
+    logo: <img src="cart.svg" alt="Logo Cart" style={{ width: "100%" }} />,
   };
 
   const Title = () => {
@@ -85,12 +88,40 @@ export default function OAuthSignInPage() {
   return (
     // preview-start
     <AppProvider theme={theme} branding={BRANDING}>
-      <SignInPage signIn={handleGoogleSignIn}
+      {/* <SignInPage signIn={handleGoogleSignIn}
         slots={{
-          title: () => <h1 style={{ color: '#1976d2' }}>Bem-vindo ao Meu App</h1>,
-          subtitle: () => <h2 style={{ color: '#555' }}>Faça login para continuar</h2>,
+          title: Title,
+          subtitle: Subtitle,
         }}
-        providers={providers} />
+        providers={providers} /> */}
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        height="100vh"
+        width="40%"
+        margin="0 auto"
+      >
+        <Icon sx={{ fontSize: 60 }}>
+          {BRANDING.logo}
+        </Icon>
+        <Typography variant="h5" gutterBottom>
+          Entrar na aplicaçao <br/> {BRANDING.title}
+        </Typography>
+        <LoadingButton
+          type="submit"
+          // fullWidth
+          size="large"
+          variant="outlined"
+          loading={loading}
+          value={'google'}
+          startIcon={<GoogleIcon key="google" />}
+          onClick={handleGoogleSignIn}
+        >
+          Entrar com Google
+        </LoadingButton>
+      </Box>
     </AppProvider>
     // preview-end
   );
