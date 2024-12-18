@@ -120,7 +120,7 @@ const EditTableUpdate = () => {
   };
 
   const handleDeleteData = () => {
-    deletarRefKey.mutate(selectedYear + selectedMonth);
+    deletarRefKey.mutate(selectedYear + selectedMonth );
   };
 
   // Novo registro

@@ -427,6 +427,9 @@ const FileUploadContext = ({ children }) => {
         },
       };
       const result = clientAxios.put("/CartItemsUpd", newCartItems);
+      return result;
+    },
+    onSuccess: async (data) => {
       await queryClient.invalidateQueries({
         queryKey: ["dataCartYear"],
         refetchType: "active",
@@ -434,8 +437,8 @@ const FileUploadContext = ({ children }) => {
         refetchInactive: false,
       });
       queryClient.refetchQueries(["dataCartYear"]);
-      return result;
-    },
+      return data;
+    }
   });
 
   const deletarItem = useMutation({
@@ -449,7 +452,14 @@ const FileUploadContext = ({ children }) => {
       setDataUpd(updatedRows);
       return resposta.data;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      await queryClient.invalidateQueries({
+        queryKey: ["dataCartYear"],
+        refetchType: "active",
+        refetchActive: true,
+        refetchInactive: false,
+      });
+      queryClient.refetchQueries(["dataCartYear"]);      
       return data;
     },
     onError: (error) => {
@@ -477,13 +487,24 @@ const FileUploadContext = ({ children }) => {
         );
       }
     },
+    onSuccess: async (data) => {
+      setDataUpd([]);
+      await queryClient.invalidateQueries({
+        queryKey: ["dataCartYear"],
+        refetchType: "active",
+        refetchActive: true,
+        refetchInactive: false,
+      });
+      queryClient.refetchQueries(["dataCartYear"]);
+      return data;
+    },
+    onError: (error) => {
+      console.error("Erro:", error);
+    },
+
   });
 
   const ifRefExist = useMutation({
-    // mutationFn: async (refKey) => {
-    //   const resposta = await clientAxios.get(`/CheckRefKey/${refKey}`);
-    //   return resposta.data;
-    // },
     mutationFn: async (refKey) => getRefKey(refKey),
   });
 
