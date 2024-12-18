@@ -49,7 +49,7 @@ const FileUploadContext = ({ children }) => {
     },
   });
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {

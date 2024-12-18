@@ -16,11 +16,12 @@ const providers = [
 ];
 
 export default function OAuthSignInPage() {
-  const { setSession, loading } = useFileUploadContext();
+  const { setSession, loading, setLoading } = useFileUploadContext();
 
   const navigate = useNavigate();
 
   const handleGoogleSignIn = async (provider) => {
+    setLoading(true);
     const promise = new Promise((resolve) => {
       console.log(auth.currentUser);
       if (auth.currentUser) {
