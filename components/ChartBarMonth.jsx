@@ -19,7 +19,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 const ChartMonthly = () => {
   const { dataMonthly } = useFileUploadContext();
   const currentMonth = new Date().getMonth() + 1;
-  const mes = months.find((el) => el.value === currentMonth.toString());
+  const mes = months.find((el) => el.value === currentMonth.toString().padStart(2, "0"));
 
   
   // Reorganizar os dados dinamicamente
